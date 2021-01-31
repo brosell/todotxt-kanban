@@ -14,13 +14,6 @@ LINEITEM=`${todo_sh} ls | grep "^$ITEM_NUMBER "`
 # strip the item# and space using replace
 TASK=${LINEITEM/$ITEM_NUMBER /}
 
-# the task must contain a project reference like "+project" or "+project-2" or ...
-# but, why?
-# if ! echo "$TASK" | grep -q "\+[a-zA-Z0-9\-]"; then
-#     echo "ABORT: there are no projects specified for the task";
-#     exit 1;
-# fi
-
 # strip any current kanban status with replace
 TASK=${TASK/"@inprogress"/}
 TASK=${TASK/"@done"/}
@@ -42,3 +35,4 @@ $todo_sh replace $ITEM_NUMBER "$TASK"
 # regenerate the boards; this could be a little smarter and only update the changed project's boards
 listToRegen=`echo "${LINEITEM}" | grep -P -o "\+.*?[\s]" | xargs`
 "${script_dir}/tkb-gen" $listToRegen
+
