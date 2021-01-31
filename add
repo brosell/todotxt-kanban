@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+# quick and dirty add tasks with a prompt
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
+. "$script_dir/tkb.cfg"
+
+while true
+do 
+    read -p 'Task: ' TASK_TEXT
+    $todo_sh a "$TASK_TEXT"
+done;

@@ -1,0 +1,89 @@
+#!/bin/bash
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
+. "$script_dir/tkb.cfg"
+
+gen_section () {
+    local project_name=$1
+    local project_query=$2
+    local context_query=$3
+    
+    # echo project query: "${project_query}"
+    # echo grep: "grep -E ${project_query}"
+
+
+    $todo_sh ls $context_query | # find tasks that for project and context
+        grep -E ${project_query} | # '\s\+\b(\w*project_name\w*)\b(\s|$)' |
+        sort -n | 
+        grep -v -e "^TODO:" \
+                -e "^--" \
+        | while read line; do 
+            # line=${line/+$project_name/}; 
+            line=${line/$context_query/}; 
+            line=`echo $line | xargs`; 
+            echo "- $line"; 
+        done
+}
+# -e "\+$PROJECT[^\s]" | # filter out summaries and projects with where name.startsWith
+#                -e "+${PROJECT}[^ ]" \
+ 
+
+# NOTES
+# tkb ls -'\+tkb.' +tkb -- includes +tkb and excludes +tkb-extra
+# tkb ls -'\+.*$' -- just projectless
+
+gen_kanban () {
+    # title of page
+    # project query    
+    local project_name="$1"
+    local project_query="$2"
+
+    echo -e "# $project_name\n"
+    
+    echo -e "## Backlog"
+    local t=$(gen_section $project_name "$project_query" "-@done -@inprogress") 
+    echo "${t}"
+
+    echo -e "\n## In Progress"
+    local t=$(gen_section $project_name "$project_query" "@inprogress") 
+    echo "${t}"
+    
+    echo -e "\n## Done"
+    local t=$(gen_section $project_name "$project_query" "@done") 
+    echo "${t}"
+}
+
+if [[ ! -z "$1" ]]
+then 
+    # if $1 is previded assume it is the beginning of a list of projects to regen
+    projects=($@)
+else
+    # otherwise read the projects from todo.txt into the array
+    mapfile -t projects <<< `$todo_sh lsprj`
+
+    # todo (ha) in this case:
+    #   do the archive step to remove empty lines. (we preserver them normally so that we don''t have to constantly regen all the board because a task number changed')
+    #   and now is a good time to delete all the existing kanbans to clean out empty ones
+    #   
+fi
+
+for proj in ${projects[@]}; do
+    echo $proj
+    proj="${proj/+/}"
+    proj_md="$kanban_path/${filename_prefix}${proj}${filename_suffix}.md"
+    chmod +w $proj_md
+    proj_q="\s\+\b(\w*$proj\w*)\b(\s|$)"
+    echo "$(gen_kanban $proj $proj_q)" > $proj_md
+    chmod 444 $proj_md
+done
+
+echo dangling
+proj_md="$kanban_path/${filename_prefix}Unassigned${filename_suffix}.md"
+chmod +w $proj_md
+t=$(gen_kanban Unassiged "-v \+.+") 
+echo "${t}" > $proj_md
+chmod 444 $proj_md
+
+
+
+exit 0;
