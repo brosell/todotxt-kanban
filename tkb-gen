@@ -16,7 +16,7 @@ gen_section () {
                 -e "^--" \
         | while read line; do 
             line=${line/$context_query/}; # remove the context from the display value
-            line=`echo $line | xargs`; 
+            line=`echo $line | xargs -0`; 
             echo "- $line"; 
         done
 }
@@ -64,9 +64,12 @@ for proj in ${projects[@]}; do
     chmod 444 $proj_md
 done
 
-echo dangling
-proj_md="$kanban_path/${filename_prefix}Unassigned${filename_suffix}.md"
-chmod +w $proj_md
-t=$(gen_kanban Unassiged "-v \+.+") 
-echo "${t}" > $proj_md
-chmod 444 $proj_md
+if [ -z $tkb_skip_unassigned ]
+then
+    echo dangling
+    proj_md="$kanban_path/${filename_prefix}Unassigned${filename_suffix}.md"
+    chmod +w $proj_md
+    t=$(gen_kanban Unassiged "-v \+.+") 
+    echo "${t}" > $proj_md
+    chmod 444 $proj_md
+fi;

@@ -95,7 +95,7 @@ complete -F _todo todo.sh
 
 _tkb()
 {
-    local _todo_sh='todo.sh -d ~/todo.txt-kanban/bin/tkb.cfg'
+    local _todo_sh='todo.sh -d ~/bin/tkb.cfg'
     _todo "$@"
 }
 complete -F _tkb tkb

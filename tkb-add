@@ -5,8 +5,12 @@
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 . "$script_dir/tkb.cfg"
 
-while true
+read -p 'Task: ' TASK_TEXT
+while [ ! -z "$TASK_TEXT" ]
 do 
-    read -p 'Task: ' TASK_TEXT
     $todo_sh a "$TASK_TEXT"
+    read -p 'Task: ' TASK_TEXT
 done;
+
+tkb-gen
+

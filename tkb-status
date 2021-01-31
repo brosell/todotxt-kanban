@@ -21,7 +21,7 @@ TASK=${TASK/"@backlog"/}
 TASK=${TASK/"@blocked"/}
 
 # cute way to trim whitespace. also condences internal whitespace so " foo    bar   " becomes "foo bar"
-TASK=`echo $TASK | xargs`
+TASK=`echo $TASK | xargs -0`
 
 # if new status is not passed in then leave status empty
 status_list=("inprogress" "done" "blocked" "backlog" "")

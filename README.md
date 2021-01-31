@@ -21,6 +21,7 @@ The `tkb` tools work by manipulating tasks by adding and removing @contexts that
 		- Each kanban file will have three sections: Backlog, In Progress, and Done.
 		- The files are chmod to read-only to help remind that they shouldn't be edited manually.
 		- Since your tasks won't have any kanban contexts they will all be in Backlog.
+            > any tasks that don't have a project will be added to a board called Unassigned. Even I think this may be wrong so this should be configurable
 - As a PF I want to move a task to (In Progress|Done|Backlog)
 	- `tkb-status TASK# (inprogress|done|backlog)`
 		- You can move from any status to any other status
@@ -38,6 +39,8 @@ The `tkb` tools work by manipulating tasks by adding and removing @contexts that
 > Disclaimer: This isn't a commitment. I'm building and updating this based on my workflow. I'm happy to accept pull requests that make sense to me and fulfill any of these or other open items.
 - [ ] convert to todo.txt's addon framework
 - [ ] add configurations for contexts
+- [ ] add config for skipping unassigned
+- [ ] delete kanbans with no tasks (i.e. that project is done)
 - [ ] use templates for kanban output
 - [ ] repo needs organizing
 - [ ] figure out how the cool kids are licensing things these days
