@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# "install"
+
+mkdir -p ~/bin
+cp tkb-add tkb tkb-gen tkb-status todo* ~/bin
+
