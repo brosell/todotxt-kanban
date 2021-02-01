@@ -1,0 +1,23 @@
+#!/bin/bash
+
+usage() {
+    cat <<USAGE
+    $(basename "${0}") [+project]
+      add multiple tasks, then update kanban pages
+USAGE
+}
+
+
+[ "$1" = "usage" ] && usage && exit
+shift
+
+todo_sh="$TODO_FULL_SH"
+
+read -p 'Task: ' TASK_TEXT
+while [ ! -z "$TASK_TEXT" ]
+do 
+    $todo_sh a "$TASK_TEXT"
+    read -p 'Task: ' TASK_TEXT
+done;
+
+$todo_sh kbg

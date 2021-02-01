@@ -1,0 +1,43 @@
+#!/bin/bash
+
+usage() {
+    cat <<USAGE
+    $(basename "${0}") [+project]
+      create or update the project's kanban page
+USAGE
+}
+
+
+[ "$1" = "usage" ] && usage && exit
+shift
+
+
+
+todo_sh="$TODO_FULL_SH"
+
+if [[ ! -z "$1" ]]
+then 
+    # if $1 is previded assume it is the beginning of a list of projects to regen
+    projects=($@)
+else
+    # otherwise read the projects from todo.txt into the array
+    mapfile -t projects <<< `$todo_sh lsprj`
+
+    # since we're generating all of the boards we can delete any exising kanbans.
+    # chmod +w $kanban_path/${filename_prefix}*${filename_suffix}.md
+    rm -f $kanban_path/${filename_prefix}*${filename_suffix}.md
+    
+    # todo (ha) in this case:
+    #   do the archive step to remove empty lines. (we preserver them normally so that we don''t have to constantly regen all the board because a task number changed')
+    #   and now is a good time to delete all the existing kanbans to clean out empty ones
+    #   
+fi
+
+for proj in ${projects[@]}; do
+    echo $proj
+    proj=${proj/+/}
+    proj_md="$kanban_path/${filename_prefix}${proj}${filename_suffix}.md"
+    chmod -f +w $proj_md
+    ${todo_sh} kbgo $proj > $proj_md
+    chmod 444 $proj_md
+done

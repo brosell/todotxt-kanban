@@ -1,0 +1,42 @@
+#!/bin/bash
+
+usage() {
+    cat <<USAGE
+    $(basename "${0}") TASK# [kanban status]
+      change the kanban status of TASK#
+USAGE
+}
+
+
+[ "$1" = "usage" ] && usage && exit
+shift
+
+ITEM_NUMBER=$1
+NEW_STATUS=$2
+
+todo_sh="$TODO_FULL_SH"
+
+LINEITEM=`${todo_sh} ls | grep "^$ITEM_NUMBER "`
+
+[[ -z "$LINEITEM" ]] && { echo "ABORT: item $ITEM_NUMBER not found"; exit 1; }
+
+# strip the item# and space using replace
+TASK=${LINEITEM/$ITEM_NUMBER /}
+
+# strip any current kanban status with replace
+TASK=${TASK/"@inprogress"/}
+TASK=${TASK/"@done"/}
+TASK=${TASK/"@backlog"/}
+TASK=${TASK/"@blocked"/}
+
+# cute way to trim whitespace. also condences internal whitespace so " foo    bar   " becomes "foo bar"
+TASK=`echo $TASK | xargs -0`
+
+# if new status is not passed in then leave status empty
+status_list=("inprogress" "done" "blocked" "backlog" "")
+[[ ! -z "$NEW_STATUS" ]] && [[ ! " ${status_list[@]} " =~ " ${NEW_STATUS} " ]] && { echo "ABOUT: invalid status '$NEW_STATUS'"; exit 1; }
+
+[[ ! -z "$NEW_STATUS" ]] && TASK="$TASK @$NEW_STATUS"
+
+# replace the exisint item text, context with new one.
+$todo_sh replace $ITEM_NUMBER "$TASK"
