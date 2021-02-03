@@ -2,6 +2,7 @@
 
 # "install"
 
-mkdir -p ~/bin
-cp tkb-add tkb tkb-gen tkb-status todo* ~/bin
+mkdir -p ~/bin/todo.actions.d
+cp tkb todo* ~/bin
+cp -r todo.actions.d/* ~/bin/todo.actions.d
 

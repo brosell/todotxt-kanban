@@ -13,11 +13,47 @@ shift
 
 todo_sh="$TODO_FULL_SH"
 
-read -p 'Task: ' TASK_TEXT
+reade () {
+    # this is badass and came from https://stackoverflow.com/a/36523291
+    # It doesn't seem to treat contexts well (@context) since the it'll 
+    # add them as "\@context". I do a string replace outside of this to workaround
+
+
+  tmpdir=$(date "+/tmp/%Y%m%d%H%M%S$$")
+  mkdir "${tmpdir}"
+  for ptag in "${predefinedtags[@]}" ; do
+    touch "${tmpdir}"/"${ptag}"
+  done
+
+    # IDK how this works just yet...
+  readetags=$(cd "${tmpdir}" || printf "internal error" ; read -re usertags ; printf "%s" "${usertags}")
+  
+  #ls ${tmpdir}
+  rm -rf "${tmpdir}" 2>/dev/null >/dev/null
+
+  # set the variable  
+  eval "${1}"=\"\$\{readetags\}\"
+}
+
+prepareTags () {
+    mapfile -t predefinedtags <<< `${todo_sh} lsprj`
+    mapfile -t -O "${#managed_policies[@]}" predefinedtags <<< `${todo_sh} lsc`
+}
+
+
+prepareTags
+echo "tags: ${predefinedtags[@]}"
+
+# predefinedtags=(one two three four five)
+echo "TASK (empty to generate boards): "
+reade TASK_TEXT
+
 while [ ! -z "$TASK_TEXT" ]
 do 
-    $todo_sh a "$TASK_TEXT"
-    read -p 'Task: ' TASK_TEXT
+    $todo_sh a "${TASK_TEXT//\\@/@}"
+    prepareTags
+    echo "TASK (empty to generate boards): "
+    reade TASK_TEXT
 done;
 
 $todo_sh kbg
