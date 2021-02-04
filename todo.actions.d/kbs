@@ -16,7 +16,11 @@ NEW_STATUS=$2
 
 todo_sh="$TODO_FULL_SH"
 
-LINEITEM=`${todo_sh} ls | grep "^$ITEM_NUMBER "`
+# LINEITEM=`${todo_sh} -p ls | grep "^$ITEM_NUMBER "`
+
+regex="[0-9]+\s(\([A-Z]\))?(.*$)" # group[1] == (optional) priority and group[2] == task text
+[[ $(${todo_sh} -p ls | grep "^$ITEM_NUMBER ") =~ $regex ]] && LINEITEM="${BASH_REMATCH[2]}"
+
 
 [[ -z "$LINEITEM" ]] && { echo "ABORT: item $ITEM_NUMBER not found"; exit 1; }
 
@@ -40,3 +44,7 @@ status_list=("inprogress" "done" "blocked" "backlog" "")
 
 # replace the exisint item text, context with new one.
 $todo_sh replace $ITEM_NUMBER "$TASK"
+
+listToRegen=`echo "${LINEITEM}" | grep -P -o "\+.*?([\s]|$)" | xargs`
+echo $listToRegen
+$todo_sh kbg $listToRegen

@@ -3,4 +3,4 @@
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 cfg_path="$script_dir/tkb.cfg"
 
-"$script_dir/todo.sh" -d $cfg_path -N  $@
+"$script_dir/todo.sh" -p -d $cfg_path -N  $@

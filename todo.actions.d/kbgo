@@ -22,7 +22,7 @@ gen_section () {
 
     $todo_sh ls $context_query | # find tasks that for project and context
         grep -E ${project_query} | 
-        sort -n | 
+        # sort -n | 
         grep -v -e "^TODO:" \
                 -e "^--" \
         | while read line; do 

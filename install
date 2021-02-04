@@ -3,6 +3,6 @@
 # "install"
 
 mkdir -p ~/bin/todo.actions.d
-cp tkb todo* ~/bin
+cp tkb todo.sh todo_completion ~/bin
 cp -r todo.actions.d/* ~/bin/todo.actions.d
 
